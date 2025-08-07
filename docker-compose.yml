@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  hianime-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hianime-api
+    ports:
+      - "3030:${PORT:-8080}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT:-8080}
+      # Add your environment variables here
+      # - ORIGIN=http://localhost:3000
+      # - RATE_LIMIT_WINDOW_MS=60000
+      # - RATE_LIMIT_LIMIT=100
+    volumes:
+      # Uncomment if you need to mount environment file
+      # - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8080}/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - hianime-network
+
+networks:
+  hianime-network:
+    driver: bridge
